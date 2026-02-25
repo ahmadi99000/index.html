@@ -5,19 +5,17 @@
   <title>AI Photo Enhancer</title>
   <style>
     body { font-family: Arial; text-align: center; }
-    canvas { border: 1px solid #ccc; margin-top: 10px; }
-    .controls { margin-top: 15px; }
-    button { margin: 5px; padding: 10px; }
+    canvas { border: 1px solid #ccc; margin-top: 10px; max-width: 90%; }
+    button { margin: 10px; padding: 10px 20px; }
   </style>
 </head>
 <body>
   <h1>AI Photo Enhancer</h1>
   <input type="file" id="upload" accept="image/*">
   <canvas id="canvas"></canvas>
-  <div class="controls">
-    <button onclick="enhance('contrast')">Enhance Contrast</button>
-    <button onclick="enhance('brightness')">Boost Brightness</button>
-    <button onclick="enhance('sharpen')">Sharpen</button>
+  <div>
+    <button onclick="autoEnhance()">Auto Enhance</button>
+    <button onclick="downloadImage()">Download</button>
   </div>
 
   <script>
@@ -41,27 +39,32 @@
       ctx.drawImage(img, 0, 0);
     };
 
-    function enhance(type) {
+    function autoEnhance() {
       let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       let data = imageData.data;
 
       for (let i = 0; i < data.length; i += 4) {
-        if (type === 'contrast') {
-          data[i] = Math.min(255, data[i] * 1.2);     // Red
-          data[i+1] = Math.min(255, data[i+1] * 1.2); // Green
-          data[i+2] = Math.min(255, data[i+2] * 1.2); // Blue
-        }
-        if (type === 'brightness') {
-          data[i] += 20; data[i+1] += 20; data[i+2] += 20;
-        }
-        if (type === 'sharpen') {
-          // Simple sharpen effect placeholder
-          data[i] = Math.min(255, data[i] * 1.1);
-          data[i+1] = Math.min(255, data[i+1] * 1.1);
-          data[i+2] = Math.min(255, data[i+2] * 1.1);
-        }
+        // Slight contrast boost
+        data[i] = Math.min(255, data[i] * 1.1);     // Red
+        data[i+1] = Math.min(255, data[i+1] * 1.1); // Green
+        data[i+2] = Math.min(255, data[i+2] * 1.1); // Blue
+
+        // Brightness lift
+        data[i] += 10; data[i+1] += 10; data[i+2] += 10;
+
+        // Simple sharpen effect placeholder
+        data[i] = Math.min(255, data[i] * 1.05);
+        data[i+1] = Math.min(255, data[i+1] * 1.05);
+        data[i+2] = Math.min(255, data[i+2] * 1.05);
       }
       ctx.putImageData(imageData, 0, 0);
+    }
+
+    function downloadImage() {
+      const link = document.createElement('a');
+      link.download = 'enhanced-photo.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
     }
   </script>
 </body>
