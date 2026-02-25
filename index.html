@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Photo Enhancer</title>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    canvas { border: 1px solid #ccc; margin-top: 10px; }
+    .controls { margin-top: 15px; }
+    button { margin: 5px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>AI Photo Enhancer</h1>
+  <input type="file" id="upload" accept="image/*">
+  <canvas id="canvas"></canvas>
+  <div class="controls">
+    <button onclick="enhance('contrast')">Enhance Contrast</button>
+    <button onclick="enhance('brightness')">Boost Brightness</button>
+    <button onclick="enhance('sharpen')">Sharpen</button>
+  </div>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let img = new Image();
+
+    upload.addEventListener('change', e => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = evt => {
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    };
+
+    function enhance(type) {
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        if (type === 'contrast') {
+          data[i] = Math.min(255, data[i] * 1.2);     // Red
+          data[i+1] = Math.min(255, data[i+1] * 1.2); // Green
+          data[i+2] = Math.min(255, data[i+2] * 1.2); // Blue
+        }
+        if (type === 'brightness') {
+          data[i] += 20; data[i+1] += 20; data[i+2] += 20;
+        }
+        if (type === 'sharpen') {
+          // Simple sharpen effect placeholder
+          data[i] = Math.min(255, data[i] * 1.1);
+          data[i+1] = Math.min(255, data[i+1] * 1.1);
+          data[i+2] = Math.min(255, data[i+2] * 1.1);
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+  </script>
+</body>
+</html>
